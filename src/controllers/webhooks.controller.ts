@@ -40,7 +40,9 @@ export const handleTelegramWebhook = async (
             let text: string;
 
             stream.on("data", (data: string) => {
-              text = text + data;
+              if (data === "undefined") return;
+              data = data.replace("data: ", "").replace("\n\n", "");
+              text += data;
             });
 
             stream.on("end", () => {
