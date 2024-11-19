@@ -13,17 +13,17 @@ git add origin <your-repo-link>
 ## Quick Start
 ```bash
 # install packages
-yarn
+pnpm install
 
 # dev mode
-yarn dev
+pnpm dev
 
 # build
-yarn build
+pnpm build
 
 # production mode
 NODE_ENV=production
-yarn start
+pnpm start
 ```
 
 ## Structure

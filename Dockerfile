@@ -6,7 +6,10 @@ WORKDIR /app
 # Copy Repository
 COPY ./ /app
 
-# Install packages with yarn
+# Init pnpm
+RUN npm install -g pnpm
+
+# Install packages with pnpm
 RUN pnpm install
 
 # Set env to production
