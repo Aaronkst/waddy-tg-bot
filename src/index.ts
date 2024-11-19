@@ -16,10 +16,6 @@ bootstrapServer()
         process.exit(1);
       }
       server.log.info(`Server is now listening on ${address} ✨`);
-
-      server.io.on("connect", (socket) =>
-        server.log.info("Socket connected: " + socket.id),
-      );
     });
   })
   .catch((err) => {
