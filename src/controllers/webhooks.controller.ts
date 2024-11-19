@@ -40,7 +40,8 @@ export const handleTelegramWebhook = async (
             let text: string;
 
             stream.on("data", (data: string) => {
-              if (data === "undefined") return;
+              req.log.info("received data from waddy: " + data);
+              if (!data || data === "undefined") return;
               data = data.replace("data: ", "").replace("\n\n", "");
               text += data;
             });
