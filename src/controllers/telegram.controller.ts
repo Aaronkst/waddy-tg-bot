@@ -8,13 +8,16 @@ export const whoami = async (req: FastifyRequest, res: FastifyReply) => {
 };
 
 export const setWebhook = async (req: FastifyRequest, res: FastifyReply) => {
-  const { webhook } = req.body as SetWebhookT;
-  const _setWebhook = await req.tgBot.post("/setWebhook", {
-    url: webhook,
-    // secret_token: process.env.TELEGRAM_ADMIN_BASIC_TOKEN,
-  });
-  return res.code(200).send({
-    response: _setWebhook.data.ok,
-    message: _setWebhook.data.description,
-  });
+  try {
+    const { webhook } = req.body as SetWebhookT;
+    const _setWebhook = await req.tgBot.post("/setWebhook", {
+      url: webhook,
+    });
+    return res.code(200).send({
+      response: _setWebhook.data.ok,
+      message: _setWebhook.data.description,
+    });
+  } catch (err) {
+    console.log(err);
+  }
 };

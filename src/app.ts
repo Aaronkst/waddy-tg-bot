@@ -7,7 +7,7 @@ import fastifyFormbody from "@fastify/formbody";
 import { fastifyHelmet } from "@fastify/helmet";
 
 // CUSTOM DECORATORS
-import { initTgBot } from "@/decorators/api";
+import { initTgBot, initWaddyApi } from "@/decorators/api";
 
 // ROUTES
 import { homeRoute } from "@/routes/home.route";
@@ -35,13 +35,15 @@ const server = fastify({
 
 export const bootstrapServer = async (): Promise<FastifyInstance> => {
   try {
-    const envFilePath = getEnvFile();
-
     server.log.info(`This is ${process.env.NODE_ENV || "local"} environment`);
 
-    dotenv.configDotenv({
-      path: envFilePath,
-    });
+    if (process.env.NODE_ENV !== "production") {
+      const envFilePath = getEnvFile();
+
+      dotenv.configDotenv({
+        path: envFilePath,
+      });
+    }
     // database and other necessary services registration
     await server.register(fastifyHelmet);
     await server.register(fastifyCors, {
@@ -54,6 +56,7 @@ export const bootstrapServer = async (): Promise<FastifyInstance> => {
     await server.register(fastifyFormbody);
 
     await initTgBot(server);
+    await initWaddyApi(server);
 
     // routes registration
     await server.register(homeRoute);
