@@ -37,17 +37,27 @@ export const handleTelegramWebhook = async (
           )
           .then((response) => {
             const stream = response.data;
-            let text: string;
+            let text = "";
 
-            stream.on("data", (data: string) => {
-              req.log.info("received data from waddy: " + data);
+            stream.on("data", (chunk: any) => {
+              // chunk can be a buffer
+              const data = chunk.toString();
+              req.log.info("Received data from Waddy: " + data);
+
               if (!data || data === "undefined") return;
-              data = data.replace("data: ", "").replace("\n\n", "");
-              text += data;
+
+              // Clean up the data
+              const cleanData = data.replace("data: ", "").trim();
+              text += cleanData;
             });
 
             stream.on("end", () => {
               resolve(text);
+            });
+
+            stream.on("error", (err: Error) => {
+              req.log.error("Stream error:", err); // Log stream errors
+              reject(err); // Reject the promise on error
             });
           });
       } catch (err: any) {
