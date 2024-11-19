@@ -14,29 +14,39 @@ export const handleTelegramWebhook = async (
 
     const { from, chat } = payload.message;
 
+    if (payload.message.text === "/start") {
+      await req.tgBot.post("/sendMessage", {
+        chat_id: chat.id,
+        text: "Hello",
+      });
+      return res.status(200).send("Success");
+    }
+
     // use the `from` object for analytics and thread handling later
-    const waddyResponse = await new Promise(async (resolve, reject) => {
+    const waddyResponse = await new Promise((resolve, reject) => {
       try {
-        const response = await req.waddyApi.post(
-          "/basic",
-          {
-            message: payload.message.text,
-          },
-          {
-            responseType: "stream",
-          },
-        );
+        req.waddyApi
+          .post(
+            "/basic",
+            {
+              message: payload.message.text,
+            },
+            {
+              responseType: "stream",
+            },
+          )
+          .then((response) => {
+            const stream = response.data;
+            let text: string;
 
-        const stream = response.data;
-        let text: string;
+            stream.on("data", (data: string) => {
+              text = text + data;
+            });
 
-        stream.on("data", (data: string) => {
-          text = text + data;
-        });
-
-        stream.on("end", () => {
-          resolve(text);
-        });
+            stream.on("end", () => {
+              resolve(text);
+            });
+          });
       } catch (err: any) {
         req.log.error("[WADDY/ERROR]: " + err.message);
         reject(null);
