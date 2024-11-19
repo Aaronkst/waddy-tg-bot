@@ -36,19 +36,26 @@ export const handleTelegramWebhook = async (
             },
           )
           .then((response) => {
-            const stream = response.data;
-            let text = "";
+            const stream = response.data; // Ensure response.data is the stream
+            let text = ""; // Initialize text as an empty string
+            let buffer = ""; // Buffer to accumulate data chunks
 
-            stream.on("data", (chunk: any) => {
-              // chunk can be a buffer
-              const data = chunk.toString();
-              req.log.info("Received data from Waddy: " + data);
+            stream.on("data", (chunk: Buffer) => {
+              // Convert chunk to string
+              buffer += chunk.toString();
 
-              if (!data || data === "undefined") return;
+              // Process each complete message in the buffer
+              let messages = buffer.split("\n\n"); // Assuming `\n\n` separates messages
+              buffer = messages.pop()!; // Retain the last incomplete message in the buffer
 
-              // Clean up the data
-              const cleanData = data.replace("data: ", "").trim();
-              text += cleanData;
+              messages.forEach((message) => {
+                if (!message || message === "undefined") return;
+
+                // Process the clean message
+                const cleanData = message.replace("data: ", "").trim();
+                req.log.info("Received data from Waddy: " + cleanData);
+                text += cleanData;
+              });
             });
 
             stream.on("end", () => {
