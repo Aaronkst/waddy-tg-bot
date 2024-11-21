@@ -17,7 +17,7 @@ export const handleTelegramWebhook = async (
     if (payload.message.text === "/start") {
       await req.tgBot.post("/sendMessage", {
         chat_id: chat.id,
-        text: "Hello",
+        text: "မင်္ဂလာပါလူကြီးမင်း။ ယနေ့ဘယ်လိုဝန်ဆောင်မှုများလိုအပ်ပါသလဲရှင့်။",
       });
       return res.status(200).send("Success");
     }
@@ -52,7 +52,7 @@ export const handleTelegramWebhook = async (
                 if (!message || message === "undefined") return;
 
                 // Process the clean message
-                const cleanData = message.replace("data: ", "").trim();
+                const cleanData = message.replace("data: ", "");
                 req.log.info("Received data from Waddy: " + cleanData);
                 text += cleanData;
               });
